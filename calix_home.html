@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.A.L.I.X</title>
+    <!-- Include Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/9e7d6b9dcd.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="../static/css/calix_styles.css">
+</head>
+<body>
+    <!-- Main Screen -->
+    <div class="screen" id="main-screen">
+        <h1>C.A.L.I.X</h1>
+        <div class="input-container">
+            <div class="name-input">
+                <input type="text" placeholder="Enter your name">
+            </div>
+        </div>
+    </div>
+
+   <!-- Record Screen -->
+    <div class="screen" id="record-screen" style="display: none;">
+        <h1>Record</h1>
+        <div class="input-container">
+            <button class="mic-button large" id="record-button" onclick="toggleRecording()">
+                <i class="fas fa-microphone" id="mic-icon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Recall Screen -->
+    <div class="screen" id="recall-screen" style="display: none;">
+        <h1>Recall</h1>
+        <div class="input-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Search...">
+                <button class="mic-button" id="recall-mic-button" onclick="toggleRecallMic()">
+                    <i class="fas fa-microphone" id="recall-mic-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="activateNav(this, 'main-screen')">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item" onclick="activateNav(this, 'record-screen')">
+            <div class="nav-icon">
+                <i class="fas fa-microphone"></i>
+            </div>
+            <span class="nav-text">Record</span>
+        </div>
+        <div class="nav-item" onclick="activateNav(this, 'recall-screen')">
+            <div class="nav-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <span class="nav-text">Recall</span>
+        </div>
+    </div>
+
+    <script src="../static/js/calix.js"></script>
+</body>
+</html>
