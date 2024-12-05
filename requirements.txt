@@ -3,4 +3,5 @@ flask-cors
 wave
 pyaudio
 numpy
+openai
 
