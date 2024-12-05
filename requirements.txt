@@ -1,5 +1,7 @@
-os
 flask
 flask-cors
 wave
 pyaudio
+openai
+numpy
+
