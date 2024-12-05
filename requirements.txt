@@ -1,0 +1,9 @@
+python-dotenv
+openai==1.35.14
+pyaudio
+wave
+numpy
+sounddevice
+soundfile
+pickle
+faiss-cpu
