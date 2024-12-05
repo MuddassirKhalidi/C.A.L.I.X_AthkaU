@@ -1,80 +1,38 @@
-import os
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
-from AudioRecorder import AudioRecorder
-from memory import VectorStore
-from calix import Calix
+from audio_recorder import AudioRecorder
 
-# Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app)
+recorder = None
 
-# Load environment variables from .env file
-load_dotenv(dotenv_path=os.path.join('.env'))
-
-# Initialize necessary components
-recorder = AudioRecorder()
-store = VectorStore()
-calix = Calix(store)
-
-@app.route('/listen', methods=['GET'])
-def listen():
+@app.route('/start', methods=['POST'])
+def start_recording():
     """
-    Endpoint to start recording audio using the AudioRecorder.
-    Logs when the recording starts.
-    Returns:
-        A JSON message indicating the recording has started.
+    Start audio recording.
     """
+    global recorder
     try:
-        app.logger.info("Listen endpoint hit")
-        recorder.start_recording()
-        return jsonify({'message': 'Recording started'})
+        recorder = AudioRecorder()  # Initialize a new AudioRecorder instance
+        recorder.start_recording()  # Start the recording
+        return jsonify({"message": "Recording started"}), 200
     except Exception as e:
-        app.logger.error(f"Error starting recording: {e}")
-        return jsonify({'error': 'Failed to start recording'}), 500
+        return jsonify({"error": f"Failed to start recording: {str(e)}"}), 500
 
-
-@app.route('/stop', methods=['GET'])
-def stop_listening():
+@app.route('/stop', methods=['POST'])
+def stop_recording():
     """
-    Endpoint to stop recording audio.
-    After stopping the recording, the conversation is processed.
-    Logs when the recording is stopped.
-    Returns:
-        A JSON message indicating the recording has been stopped and the process is completed.
+    Stop audio recording and save the file.
     """
+    global recorder
     try:
-        app.logger.info("Stop Listening endpoint hit")
-        recorder.stop_recording()
-        calix.get_conversation()
-        return jsonify({'message': 'Recording stopped', 'status': 'completed'})
+        if recorder:
+            recorder.stop_recording()  # Stop the recording and save the audio
+            recorder = None  # Reset the recorder
+            return jsonify({"message": "Recording stopped and saved"}), 200
+        else:
+            return jsonify({"error": "No active recording to stop"}), 400
     except Exception as e:
-        app.logger.error(f"Error stopping recording or processing conversation: {e}")
-        return jsonify({'error': 'Failed to stop recording and process conversation'}), 500
-
-
-@app.route('/respond', methods=['GET'])
-def generate_response_route():
-    """
-    Endpoint to generate a response based on the recorded conversation.
-    Stops the recording if active, retrieves the query, and generates a response.
-    Returns:
-        A JSON object containing the query, response, and status.
-    """
-    try:
-        recorder.stop_recording()  # Ensure the recording is stopped
-        query = calix.get_query()  # Retrieve the query from the conversation
-        response = calix.generate_response(query)  # Generate a response based on the query
-        return jsonify({'query': query, 'response': response, 'status': 'completed'})
-    except Exception as e:
-        app.logger.error(f"Error generating response: {e}")
-        return jsonify({'error': 'Failed to generate response'}), 500
-
-
-# Run the Flask application
-if __name__ == "__main__":
-    try:
-        app.run(debug=True)
-    except Exception as e:
-        app.logger.error(f"Error running the Flask app: {e}")
+        return jsonify({"error": f"Failed to stop recording: {str(e)}"}), 500
+if __name__ == '__main__':
+    app.run(debug = True)
