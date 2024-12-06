@@ -116,7 +116,7 @@ function uploadAudio(audioFile) {
     const formData = new FormData();
     formData.append("audio", audioFile);
 
-    fetch("http://127.0.0.1:5000/upload", {
+    fetch("https://athkau-calix-app-c9fda0bwggb3cxhn.uaenorth-01.azurewebsites.net/upload", {
         method: "POST",
         body: formData,
     })
