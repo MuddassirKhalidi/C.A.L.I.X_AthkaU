@@ -28,84 +28,187 @@ function enableNavigation() {
     });
 }
 
-// Handle toggling recording for the record screen
-async function toggleRecording() {
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+// Function to toggle recording
+function toggleRecording() {
     const recordButton = document.getElementById('record-button');
     const micIcon = document.getElementById('mic-icon');
 
-    if (micIcon.classList.contains('fa-microphone')) {
-        // Start recording via the `/start` API endpoint
-        try {
-            const response = await fetch('http://127.0.0.1:5000/start', { method: 'POST' });
-            if (response.ok) {
-                console.log("Recording started successfully via API.");
-                micIcon.classList.remove('fa-microphone');
-                micIcon.classList.add('fa-stop');
-                recordButton.classList.add('stop-active'); // Change background to red for stop
-                disableNavigation(); // Disable all navigation when recording starts
-            } else {
-                console.error("Failed to start recording:", await response.json());
-            }
-        } catch (err) {
-            console.error("Error interacting with /start API:", err);
-        }
+    if (!isRecording) {
+        startRecording();
+        micIcon.classList.remove('fa-microphone');
+        micIcon.classList.add('fa-stop');
+        recordButton.classList.add('stop-active');
+        disableNavigation();
     } else {
-        // Stop recording via the `/stop` API endpoint
-        try {
-            const response = await fetch('http://127.0.0.1:5000/stop', { method: 'POST' });
-            if (response.ok) {
-                console.log("Recording stopped successfully via API.");
-                micIcon.classList.remove('fa-stop');
-                micIcon.classList.add('fa-microphone');
-                recordButton.classList.remove('stop-active'); // Revert background to purple
-                enableNavigation(); // Re-enable all navigation when recording stops
-            } else {
-                console.error("Failed to stop recording:", await response.json());
-            }
-        } catch (err) {
-            console.error("Error interacting with /stop API:", err);
-        }
+        stopRecording();
+        micIcon.classList.remove('fa-stop');
+        micIcon.classList.add('fa-microphone');
+        recordButton.classList.remove('stop-active');
+        enableNavigation();
+    }
+
+    isRecording = !isRecording;
+}
+
+let isRecallRecording = false;
+
+function toggleRecallMic() {
+    const recallMicButton = document.getElementById("recall-mic-button");
+    const recallMicIcon = document.getElementById("recall-mic-icon");
+
+    if (!isRecallRecording) {
+        startRecording();
+        recallMicIcon.classList.remove('fa-microphone');
+        recallMicIcon.classList.add('fa-stop');
+        recallMicButton.classList.add('stop-active'); 
+        disableNavigation(); 
+    } else {
+        stopRecording();
+        recallMicIcon.classList.remove("fa-stop");
+        recallMicIcon.classList.add("fa-microphone");
+        recallMicButton.classList.remove("stop-active");
+        enableNavigation();
+    }
+
+    isRecallRecording = !isRecallRecording;
+}
+
+// Function to start recording
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            mediaRecorder.start();
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+        })
+        .catch((error) => {
+            console.error("Error accessing microphone: ", error);
+        });
+}
+
+// Function to stop recording
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            audioChunks = [];
+
+            // Create a file-like object with a unique name
+            const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
+
+            // Send the file to the Flask API
+            uploadAudio(audioFile);
+        };
     }
 }
 
-async function toggleRecallMic() {
-    const recallMicButton = document.getElementById('recall-mic-button');
-    const recallMicIcon = document.getElementById('recall-mic-icon');
+// Function to upload audio to the Flask API
+function uploadAudio(audioFile) {
+    const formData = new FormData();
+    formData.append("audio", audioFile);
 
-    if (recallMicIcon.classList.contains('fa-microphone')) {
-        // Start recording via the `/start` API endpoint
-        try {
-            const response = await fetch('http://127.0.0.1:5000/start', { method: 'POST' });
-            if (response.ok) {
-                console.log("Recall recording started successfully via API.");
-                recallMicIcon.classList.remove('fa-microphone');
-                recallMicIcon.classList.add('fa-stop');
-                recallMicButton.classList.add('stop-active'); // Change background to red for stop
-                disableNavigation(); // Disable all navigation when recording starts
-            } else {
-                console.error("Failed to start recall recording:", await response.json());
-            }
-        } catch (err) {
-            console.error("Error interacting with /start API:", err);
-        }
-    } else {
-        // Stop recording via the `/stop` API endpoint
-        try {
-            const response = await fetch('http://127.0.0.1:5000/stop', { method: 'POST' });
-            if (response.ok) {
-                console.log("Recall recording stopped successfully via API.");
-                recallMicIcon.classList.remove('fa-stop');
-                recallMicIcon.classList.add('fa-microphone');
-                recallMicButton.classList.remove('stop-active'); // Revert background to purple
-                enableNavigation(); // Re-enable all navigation when recording stops
-            } else {
-                console.error("Failed to stop recall recording:", await response.json());
-            }
-        } catch (err) {
-            console.error("Error interacting with /stop API:", err);
-        }
-    }
+    fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Audio uploaded successfully:", data);
+            alert(data.message); // Notify the user of successful upload
+        })
+        .catch((error) => {
+            console.error("Error uploading audio:", error);
+        });
 }
+
+
+// // Handle toggling recording for the record screen
+// async function toggleRecording() {
+//     const recordButton = document.getElementById('record-button');
+//     const micIcon = document.getElementById('mic-icon');
+
+//     if (micIcon.classList.contains('fa-microphone')) {
+//         // Start recording via the `/start` API endpoint
+//         try {
+//             const response = await fetch('http://127.0.0.1:5000/start', { method: 'POST' });
+//             if (response.ok) {
+//                 console.log("Recording started successfully via API.");
+//                 micIcon.classList.remove('fa-microphone');
+//                 micIcon.classList.add('fa-stop');
+//                 recordButton.classList.add('stop-active'); // Change background to red for stop
+//                 disableNavigation(); // Disable all navigation when recording starts
+//             } else {
+//                 console.error("Failed to start recording:", await response.json());
+//             }
+//         } catch (err) {
+//             console.error("Error interacting with /start API:", err);
+//         }
+//     } else {
+//         // Stop recording via the `/stop` API endpoint
+//         try {
+//             const response = await fetch('http://127.0.0.1:5000/stop', { method: 'POST' });
+//             if (response.ok) {
+//                 console.log("Recording stopped successfully via API.");
+//                 micIcon.classList.remove('fa-stop');
+//                 micIcon.classList.add('fa-microphone');
+//                 recordButton.classList.remove('stop-active'); // Revert background to purple
+//                 enableNavigation(); // Re-enable all navigation when recording stops
+//             } else {
+//                 console.error("Failed to stop recording:", await response.json());
+//             }
+//         } catch (err) {
+//             console.error("Error interacting with /stop API:", err);
+//         }
+//     }
+// }
+
+// async function toggleRecallMic() {
+//     const recallMicButton = document.getElementById('recall-mic-button');
+//     const recallMicIcon = document.getElementById('recall-mic-icon');
+
+//     if (recallMicIcon.classList.contains('fa-microphone')) {
+//         // Start recording via the `/start` API endpoint
+//         try {
+//             const response = await fetch('http://127.0.0.1:5000/start', { method: 'POST' });
+//             if (response.ok) {
+//                 console.log("Recall recording started successfully via API.");
+//                 recallMicIcon.classList.remove('fa-microphone');
+//                 recallMicIcon.classList.add('fa-stop');
+//                 recallMicButton.classList.add('stop-active'); // Change background to red for stop
+//                 disableNavigation(); // Disable all navigation when recording starts
+//             } else {
+//                 console.error("Failed to start recall recording:", await response.json());
+//             }
+//         } catch (err) {
+//             console.error("Error interacting with /start API:", err);
+//         }
+//     } else {
+//         // Stop recording via the `/stop` API endpoint
+//         try {
+//             const response = await fetch('http://127.0.0.1:5000/stop', { method: 'POST' });
+//             if (response.ok) {
+//                 console.log("Recall recording stopped successfully via API.");
+//                 recallMicIcon.classList.remove('fa-stop');
+//                 recallMicIcon.classList.add('fa-microphone');
+//                 recallMicButton.classList.remove('stop-active'); // Revert background to purple
+//                 enableNavigation(); // Re-enable all navigation when recording stops
+//             } else {
+//                 console.error("Failed to stop recall recording:", await response.json());
+//             }
+//         } catch (err) {
+//             console.error("Error interacting with /stop API:", err);
+//         }
+//     }
+// }
 
 
 function togglePasswordVisibility(inputId) {
