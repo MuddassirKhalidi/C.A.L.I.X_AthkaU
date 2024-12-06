@@ -1,6 +1,7 @@
 gunicorn
 flask
 flask-cors
+python-dotenv
 numpy
 openai
 azure.cognitiveservices.speech
