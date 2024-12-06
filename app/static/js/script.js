@@ -32,7 +32,7 @@ let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
 
-// Function to toggle recording
+// Function to twebmle recording
 function toggleRecording() {
     const recordButton = document.getElementById('record-button');
     const micIcon = document.getElementById('mic-icon');
@@ -131,8 +131,8 @@ function uploadAudio(audioFile) {
 }
 
 
-// // Handle toggling recording for the record screen
-// async function toggleRecording() {
+// // Handle twebmling recording for the record screen
+// async function twebmleRecording() {
 //     const recordButton = document.getElementById('record-button');
 //     const micIcon = document.getElementById('mic-icon');
 
@@ -171,7 +171,7 @@ function uploadAudio(audioFile) {
 //     }
 // }
 
-// async function toggleRecallMic() {
+// async function twebmleRecallMic() {
 //     const recallMicButton = document.getElementById('recall-mic-button');
 //     const recallMicIcon = document.getElementById('recall-mic-icon');
 
@@ -211,18 +211,18 @@ function uploadAudio(audioFile) {
 // }
 
 
-function togglePasswordVisibility(inputId) {
+function twebmlePasswordVisibility(inputId) {
     const passwordInput = document.getElementById(inputId);
-    const toggleIcon = passwordInput.nextElementSibling; // Select the icon next to the input
+    const twebmleIcon = passwordInput.nextElementSibling; // Select the icon next to the input
 
     if (passwordInput.type === "password" ) {
         passwordInput.type = "text";
-        toggleIcon.classList.remove("fa-eye");
-        toggleIcon.classList.add("fa-eye-slash"); // Switch icon to "eye-slash"
+        twebmleIcon.classList.remove("fa-eye");
+        twebmleIcon.classList.add("fa-eye-slash"); // Switch icon to "eye-slash"
     } else {
         passwordInput.type = "password";
-        toggleIcon.classList.remove("fa-eye-slash");
-        toggleIcon.classList.add("fa-eye"); // Switch icon back to "eye"
+        twebmleIcon.classList.remove("fa-eye-slash");
+        twebmleIcon.classList.add("fa-eye"); // Switch icon back to "eye"
     }
 }
 

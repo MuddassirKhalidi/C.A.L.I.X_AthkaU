@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
+from audio_processor import AudioProcessor
 import os
 
 app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
@@ -18,8 +19,15 @@ def upload_audio():
     audio = request.files['audio']
     file_path = os.path.join(UPLOAD_FOLDER, audio.filename)
     audio.save(file_path)
-    return jsonify({"message": "Audio uploaded successfully", "file_path": file_path})
+    input_file = file_path
+    output_file = "recordings/recording.wav"
+
+    processor = AudioProcessor(input_file, output_file)
+    
+    # Transcribe the converted .wav file
+    transcribed_text = processor.transcribe_audio()
+    return jsonify({"message": "Audio transcribed successfully", "file_path": file_path})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(debug=True)
 
