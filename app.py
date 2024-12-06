@@ -30,21 +30,20 @@ def health_check():
 
     return "Healthy", 200
 
+@app.route('/upload', methods=['POST'])
+def upload_audio():
+    audio = request.files['audio']
+    file_path = os.path.join(UPLOAD_FOLDER, audio.filename)
+    audio.save(file_path)
+    input_file = file_path
+    output_file = "recordings/recording.wav"
 
-# @app.route('/upload', methods=['POST'])
-# def upload_audio():
-#     audio = request.files['audio']
-#     file_path = os.path.join(UPLOAD_FOLDER, audio.filename)
-#     audio.save(file_path)
-#     input_file = file_path
-#     output_file = "recordings/recording.wav"
-
-#     processor = AudioProcessor(SPEECH_KEY, SPEECH_REGION, input_file, output_file)
+    processor = AudioProcessor(SPEECH_KEY, SPEECH_REGION, input_file, output_file)
     
-#     # Transcribe the converted .wav file
-#     transcribed_text = processor.transcribe_audio()
-#     return jsonify({"message": "Audio transcribed successfully", "file_path": file_path, "transcription": transcribed_text})
+    # Transcribe the converted .wav file
+    transcribed_text = processor.transcribe_audio()
+    return jsonify({"message": "Audio transcribed successfully", "file_path": file_path, "transcription": transcribed_text})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000)
 
