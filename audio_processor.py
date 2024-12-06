@@ -5,18 +5,9 @@ import ffmpeg
 
 
 class AudioProcessor:
-    def __init__(self, input_file: str, output_file: str):
-        # Load environment variables
-        load_dotenv()
-
-        self.SPEECH_KEY = os.getenv("SPEECH_KEY")
-        self.SPEECH_REGION = os.getenv("SPEECH_REGION")
-
-        if not self.SPEECH_KEY or not self.SPEECH_REGION:
-            raise ValueError("Azure Speech key and region must be set in the environment variables.")
-
+    def __init__(self, SPEECH_KEY, SPEECH_REGION, input_file: str, output_file: str):
         # Initialize Azure Speech Service configuration
-        self.speech_config = speechsdk.SpeechConfig(subscription=self.SPEECH_KEY, region=self.SPEECH_REGION)
+        self.speech_config = speechsdk.SpeechConfig(subscription=SPEECH_KEY, region=SPEECH_REGION)
 
         self.input_file = input_file
         self.output_file = output_file
