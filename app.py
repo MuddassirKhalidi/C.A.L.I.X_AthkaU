@@ -29,5 +29,5 @@ def upload_audio():
     return jsonify({"message": "Audio transcribed successfully", "file_path": file_path})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port='8000', debug=True)
 
