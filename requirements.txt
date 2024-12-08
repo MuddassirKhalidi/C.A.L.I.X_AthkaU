@@ -4,6 +4,8 @@ flask-cors
 python-dotenv
 numpy
 openai
-azure.cognitiveservices.speech
-python-ffmpeg
-
+azure.storage.blob
+azure.search.documents
+ffmpeg-python
+reportlab
+pydub

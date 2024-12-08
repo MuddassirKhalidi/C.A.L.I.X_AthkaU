@@ -1,5 +1,9 @@
+html{
+    width: 100%;
+}
 /* Background and Centering */
 body {
+    max-width: 100%;
     margin: 0;
     padding: 0;
     display: flex;
@@ -7,8 +11,114 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #030a26, #5848a0, #154cff);
+    background-color: #49225B;
+    /* background: linear-gradient(135deg, #49225B, #6E3482, #A56ABD, #E7DBEF); */
     font-family: 'Arial', sans-serif;
+    overflow-x: hidden;
+}
+.menu-content h2{
+    font-family: Arial, sans-serif;
+    font-weight: lighter;
+    color: #49225B;
+}
+
+#document-list{
+    font-family: Arial, sans-serif;
+    font-weight: lighter;
+    color: #49225B;
+}
+/* Menu Bar */
+.menu-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    color: #b091db;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-button i {
+    padding: 10px;
+    pointer-events: none; /* Prevent pointer events from interfering with the icon */
+}
+
+.menu-button:hover {
+    background-color: #444;
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Hidden by default */
+    width: 30%;
+    height: 100%;
+    background-color: #E7DBEF; /* Dark background */
+    color: #fff;
+    z-index: 999;
+    transition: left 0.3s ease;
+}
+
+.menu-overlay.active {
+    left: 0; /* Show overlay */
+}
+
+.menu-content {
+    padding: 20px;
+}
+
+.menu-content h2 {
+    margin: 0 0 20px;
+    font-size: 1.5em;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+.menu-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-content ul li {
+    margin: 10px 0;
+    font-size: 1em;
+}
+
+.menu-content ul li a {
+    font-family: Arial, sans-serif;
+    font-weight: lighter;
+    color: #49225B;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.menu-content ul li a:hover {
+    color: #83A6CE;
+}
+
+/* Dim Background */
+body.menu-active {
+    overflow: hidden; /* Disable scrolling */
+}
+
+body.menu-active .screen {
+    pointer-events: none; /* Disable interaction with the main screen */
+    opacity: 0.5; /* Dim the background */
+    transition: opacity 0.3s ease;
 }
 
 /* Login Container */
@@ -184,12 +294,13 @@ body {
 /* Centering the input-container */
 .input-container {
     display: flex;
+    flex-direction: column; /* Stack items vertically */
     align-items: center;
     justify-content: center;
-    position: absolute;
+    position: absolute; /* Use absolute positioning to center */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* Offset to center precisely */
 }
 
 /* General Screen Styling */
@@ -250,13 +361,6 @@ body {
     transform: scale(0.9); /* Slightly reduce size when clicked */
 }
 
-/* Specific Size for Recall Screen (Smaller Button) */
-.mic-button {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
-}
-
 .mic-button:active {
     transform: scale(0.95); /* Slightly reduce size when clicked */
 }
@@ -270,6 +374,153 @@ body {
 .mic-button i {
     transition: color 0.3s;
 }
+
+/* Loading animation (three dots moving in a wave) */
+.dots-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    pointer-events: none;
+}
+
+.dots-loader span {
+    width: 6px;
+    height: 6px;
+    background: #000;
+    border-radius: 50%;
+    animation: wave 1.5s infinite;
+}
+
+.dots-loader span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dots-loader span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dots-loader span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes wave {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Rectangular Recall Mic Button Styling */
+.mic-button.recall-bar {
+    width: 300px; /* Matches the search bar width */
+    height: 50px; /* Matches the search bar height */
+    margin-top: 15px; /* Spacing between search bar and mic button */
+    border-radius: 25px; /* Rounded edges for bar shape */
+    background: #5a189a; /* Initial dark purple background */
+    font-size: 1.5em;
+    transition: background 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    outline: none;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Active State for Sliding Gradient */
+.mic-button.recall-bar.active {
+    background: linear-gradient(270deg, #4a148c, #d4a5f4, #9d4edd);
+    background-size: 400% 400%;
+}
+
+/* Recording State (Red Background) */
+.mic-button.recall-bar.stop-active {
+    background-color: red;
+}
+
+.screen #recall-mic-button.mic-button.recall-bar.playing {
+    background-color: rgb(33, 92, 33) !important; /* Force green background */
+    color: white !important; /* Ensure text remains visible */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Stop Button Styling */
+#stop-audio-button {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#stop-audio-button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
+
+/* Caret blinking effect for typewriter animation */
+.typing-caret {
+    border-right: 0.15em solid #ffcc00; /* Caret color */
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #ffcc00; }
+}
+
+/* Response Container Styling */
+.response-container {
+    position: absolute; /* Stay relative to the search bar */
+    top: 60%; /* Adjusted to position below the search bar */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Align container to center */
+    width: 50%; /* Default width */
+    height: auto; /* Adjust height dynamically */
+    max-height: 25%;
+    font-size: 1.2em;
+    color: #fff;
+    padding: 15px;
+    background-color: rgba(211, 221, 225, 0.8);
+    border-radius: 8px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    overflow-y: auto; /* Add scroll when content exceeds height */
+    transition: width 0.3s ease, height 0.3s ease; /* Smooth resizing */
+    display: flex; /* Use flexbox for alignment */
+    align-items: flex-start; /* Align text to the top */
+}
+
+/* Text inside container */
+#response-text {
+    font-size: 1em;
+    color: #333; /* Default text color for readability */
+    opacity: 1; /* Ensure visibility */
+    word-wrap: break-word;
+    margin: 0; /* Ensure no extra margin */
+}
+
+/* Placeholder text styling */
+#response-text::before {
+    content: attr(data-placeholder);
+    color: rgba(51, 51, 51, 0.5); /* Gray placeholder text */
+    position: absolute;
+    top: 15px; /* Align placeholder text to the top */
+    left: 15px; /* Match padding for alignment */
+    font-size: 1em; /* Ensure consistent font size */
+}
+
+/* Remove placeholder when text is updated */
+#response-text.updated::before {
+    content: none;
+}
+
 
 /* Title */
 h1 {

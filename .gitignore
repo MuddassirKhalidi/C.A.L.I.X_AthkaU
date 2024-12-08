@@ -1,6 +1,3 @@
 .env
-test.py
-reference/
-recordings/recording.wav
-recordings/recording.webm
-Dockerfile
+recordings/
+data/

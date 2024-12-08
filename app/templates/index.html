@@ -11,6 +11,22 @@
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> -->
 </head>
 <body>
+    <!--Menu Bar-->
+    <div class="menu-bar">
+        <button id="menu-toggle" class="menu-button">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="menu-overlay" class="menu-overlay">
+            <div class="menu-content">
+                <h2>Documents</h2>
+                <ul id="document-list">
+                    <!-- Dynamically populated -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+
     <!-- Main Screen -->
     <div class="screen" id="main-screen">
         <h1>C.A.L.I.X</h1>
@@ -37,13 +53,16 @@
         <div class="input-container">
             <div class="search-bar">
                 <input type="text" placeholder="Search...">
-                <button class="mic-button" id="recall-mic-button" type="button" onclick="toggleRecallMic()">
-                    <i class="fas fa-microphone" id="recall-mic-icon"></i>
-                </button>
             </div>
+            <button class="mic-button recall-bar" id="recall-mic-button" type="button" onclick="toggleRecallMic()">
+                <i class="fas fa-microphone" id="recall-mic-icon"></i>
+            </button>
         </div>
+        <div class="response-container">
+            <p id="response-text">Your response will appear here...</p>
+        </div>
+        
     </div>
-
 
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
